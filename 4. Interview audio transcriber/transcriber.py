@@ -549,18 +549,43 @@ async def process_audio_folder(input_dir, output_dir=None, transcription_model="
         print(f"Error processing folder {input_dir}: {str(e)}")
         return False
 
+def clean_env_path(path):
+    """Cleans and normalizes a .env path with quotes."""
+    if not path:
+        return ""
+    # Strip surrounding quotes and replace escape sequences
+    return os.path.normpath(path.strip().strip('"').replace('\\', '/'))
+
 def get_user_input():
     """Get user input for processing parameters."""
     print("\nAudio Transcription and Summarization Tool")
     print("=========================================")
-    
-    # Get input directory
-    input_dir = input("\nEnter the path to the folder containing audio files: ").strip()
-    input_dir = input_dir.replace('"', '').replace("'", "")  # Remove quotes if present
-    
-    # Set default output directory relative to the script location
+
+
+    # Set default input and output directory relative to the script location
     script_dir = Path(__file__).parent
+    default_input_dir = script_dir / "Input files"
     default_output_dir = script_dir / "Output files"
+
+    # Overwrite default Audio file locations and output folders if user has specified in .env
+
+    audio_env = clean_env_path(os.getenv("DEFAULT_AUDIO_FILE_LOCATION"))
+    output_env = clean_env_path(os.getenv("DEFAULT_OUTPUT_LOCATION"))
+
+    if os.getenv("DEFAULT_AUDIO_FILE_LOCATION"):
+        default_input_dir = audio_env.strip().strip('"')
+    if os.getenv("DEFAULT_OUTPUT_LOCATION"):
+        default_output_dir = output_env.strip().strip('"')
+
+    # Get input directory
+    input_prompt = f"\nEnter the path to the folder containing audio files (default: {default_input_dir}): "
+    input_dir = input(input_prompt).strip()
+    if not input_dir:
+        input_dir = default_input_dir
+    else:
+        # Convert to string before using string methods
+        input_dir = str(input_dir).replace('"', '').replace("'", "")  # Remove quotes if present
+
     
     # Get output directory
     output_prompt = f"\nEnter the path to save output files (default: {default_output_dir}): "
