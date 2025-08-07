@@ -487,7 +487,10 @@ async def process_audio_folder(input_dir, output_dir=None, transcription_model="
         
         # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
-        
+
+        # Convert any .mkv video files to .wav first
+        convert_mkv_to_wav(input_dir)
+
         # Find all audio files
         audio_extensions = ('.mp3', '.mp4', '.wav', '.m4a', '.ogg', '.flac', '.aac', '.wma')
         audio_files = []
@@ -644,6 +647,49 @@ def get_user_input():
         "summary_model": summary_model,
         "create_summary": create_summary
     }
+
+def convert_mkv_to_wav(input_dir):
+    """
+    Converts all .mkv files in the input directory to .wav format using ffmpeg.
+    Skips conversion if .wav already exists for a given .mkv file.
+    """
+    from pathlib import Path
+
+    input_path = Path(input_dir)
+    if not input_path.exists():
+        print(f"Input directory does not exist: {input_dir}")
+        return
+
+    mkv_files = list(input_path.glob("*.mkv"))
+    if not mkv_files:
+        return
+
+    print(f"Found {len(mkv_files)} .mkv file(s) to convert to .wav")
+
+    for video_file in mkv_files:
+        audio_file = video_file.with_suffix(".wav")
+        if audio_file.exists():
+            print(f"[SKIP] .wav already exists for: {video_file.name}")
+            continue
+
+        command = [
+            "ffmpeg",
+            "-y",                # overwrite if necessary
+            "-i", str(video_file),
+            "-vn",               # no video
+            "-acodec", "pcm_s16le",
+            "-ar", "44100",
+            "-ac", "2",
+            str(audio_file)
+        ]
+
+        print(f"Extracting audio from: {video_file.name}")
+        try:
+            subprocess.run(command, check=True, capture_output=True)
+            print(f"Created: {audio_file.name}")
+        except subprocess.CalledProcessError as e:
+            print(f"[ERROR] Failed to convert {video_file.name}: {e.stderr.decode().strip()}")
+
 
 async def async_main():
     """Async main function to run the script."""
