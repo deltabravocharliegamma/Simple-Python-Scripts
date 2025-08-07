@@ -18,6 +18,14 @@ from typing import List, Dict, Any
 # Load environment variables from .env file
 load_dotenv()
 
+
+# Load Trust Store if specified in .env (must install truststore)
+if os.getenv("USE_TRUST_STORE_SSL"): #set to true if you want to use while using zscaler
+    import truststore
+    truststore.inject_into_ssl()
+    os.environ.pop("SSL_CERT_FILE", None)
+
+
 # Get API key from environment variable
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
