@@ -669,7 +669,7 @@ def convert_mkv_to_wav(input_dir):
     for video_file in mkv_files:
         audio_file = video_file.with_suffix(".wav")
         if audio_file.exists():
-            print(f"[SKIP] .wav already exists for: {video_file.name}")
+            print(f".wav already exists for: {video_file.name}")
             continue
 
         command = [
