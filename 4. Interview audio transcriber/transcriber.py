@@ -368,7 +368,11 @@ async def summarize_transcript(transcript, model="gpt-4o-mini", max_retries=3):
         It infers meeting types based on conversational cues, participant roles, and agenda items. The assistant always uses concise business language, keeps the tone professional, and avoids speculation beyond business-reasonable assumptions. It asks clarifying questions only when necessary. The format and structure are consistent across outputs to ensure readability and ease of downstream sharing, storage, or documentation.
         This assistant is ideal for consultants, analysts, executives, and project managers who need fast, reliable meeting recaps and insight distillation."""
 
-        system_prompt = prompt_option_2
+        # Get prompt from env if exists
+        env_prompt = os.getenv("SYSTEM_PROMPT")
+
+        # Use custom prompt if in .env file
+        system_prompt = env_prompt if env_prompt else prompt_option_1
 
         # Try with retries
         for attempt in range(max_retries):
