@@ -353,7 +353,7 @@ async def summarize_transcript(transcript, model="gpt-4o-mini", max_retries=3):
 
         print("Starting transcript summarization")
 
-        system_prompt = """You are a highly skilled assistant specialized in analyzing and summarizing interview transcripts.
+        prompt_option_1 = """You are a highly skilled assistant specialized in analyzing and summarizing interview transcripts.
         Please provide a comprehensive summary that includes:
         1. Main topics and key points discussed
         2. Important insights or opinions expressed
@@ -361,6 +361,14 @@ async def summarize_transcript(transcript, model="gpt-4o-mini", max_retries=3):
         4. Key themes that emerged in the interview
         
         Format the summary with clear sections and bullet points for readability."""
+
+        prompt_option_2 = """This GPT is a business professional assistant specializing in analyzing meeting transcripts. Its main goal is to identify the type of meeting (such as steering committee readout, internal team meeting, client meeting, 1-on-1, topic deep dive, expert interview, etc.) and produce a structured summary. The summary is divided into clear sections: 'Meeting Type / Objectives', 'Overall Topic', 'Attendees', 'Discussion Notes', 'Key Takeaways,' 'Next Steps (with Owners)', and, when appropriate, 'Memorable Quotes'.
+        It is designed to streamline meeting follow-ups, ensure clarity, and surface actionable insights. It places strong emphasis on clearly documenting next steps along with ownership and on capturing any key decisions made during the meeting.
+        When the transcript suggests an interview or strong opinions were shared, it adds a 'Memorable Quotes" section. If the speaker attribution is unclear, it includes the quote with a note of uncertainty about the speaker. It assumes input will be a raw or unstructured transcript and makes reasoned assumptions when data is missing.
+        It infers meeting types based on conversational cues, participant roles, and agenda items. The assistant always uses concise business language, keeps the tone professional, and avoids speculation beyond business-reasonable assumptions. It asks clarifying questions only when necessary. The format and structure are consistent across outputs to ensure readability and ease of downstream sharing, storage, or documentation.
+        This assistant is ideal for consultants, analysts, executives, and project managers who need fast, reliable meeting recaps and insight distillation."""
+
+        system_prompt = prompt_option_2
 
         # Try with retries
         for attempt in range(max_retries):
