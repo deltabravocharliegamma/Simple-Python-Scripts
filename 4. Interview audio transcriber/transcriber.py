@@ -369,7 +369,7 @@ async def summarize_transcript(transcript, model="gpt-4o-mini", max_retries=3):
         This assistant is ideal for consultants, analysts, executives, and project managers who need fast, reliable meeting recaps and insight distillation."""
 
         # Get prompt from env if exists
-        env_prompt = os.getenv("SYSTEM_PROMPT")
+        env_prompt = os.getenv("CUSTOM_PROMPT")
 
         # Use custom prompt if in .env file
         system_prompt = env_prompt if env_prompt else prompt_option_1
